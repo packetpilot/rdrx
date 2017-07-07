@@ -5,11 +5,11 @@
 
 # Nuke the README from the heading "List of Redirects" onward
 # On macOS, use gsed: `brew install gnu-sed --with-default-names`
-sed -i '/^##Redirects/,$d' README.md
+sed -i '/^## Redirects/,$d' README.md
 
 # pre-populate the list
 echo \
-"##Redirects (auto-updated via hook, do not manually edit)
+"## Redirects (auto-updated via hook, do not manually edit)
 Shortcut | Long URL
 --- | ---" >> README.md
 

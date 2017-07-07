@@ -1,13 +1,13 @@
-#rdrx
+# rdrx
 
-##Description
+## Description
 
 Simple redirects for bookmark-free ACMECO internal sites navigation, easily.
 
 [Intent: company-wide or team-wide]
 
 
-##Use
+## Use
 [Omit the following two lines if an internal DNS entry is made~~, or if you dare
 to manage users' /etc/hosts file~~.]
 
@@ -18,23 +18,23 @@ For browser URL shortcuts such as "ac/jira" etc., place the following line in
 
 *Note: shortcuts will only work while connected to the VPN or on the corp net*
 
-##[Server Setup]
+## [Server Setup]
 This assumes a default Apache server without any concurrent sites, hence the
 "000-default.conf" name of the provided Apache file.
 
 Ensure you've got some mechanism by which master deploys to the webserver.
 
-##Shortcut Contributions [ACMECO user-facing]
+## Shortcut Contributions [ACMECO user-facing]
 - Please keep redirect contributions alphabetized.
 - After a a merge to master, the redirect will be live momentarily.
 - Use the pre-commit hook to auto-update this README's list of redirects.
 
-##"Someday"
+## "Someday"
 - Custom 404 with a form for magical ingestion/addition of a shortcut
 - Automation elegance via deploy hook as part of the repo
 - Auto-generation of the Apache file via $something ingestion (yaml?)
 
-##Redirects (auto-updated via hook, do not manually edit)
+## Redirects (auto-updated via hook, do not manually edit)
 Shortcut | Long URL
 --- | ---
 ` ac/aws ` | ` https://ACMECO.signin.aws.amazon.com/console `
