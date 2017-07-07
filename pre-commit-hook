@@ -1,0 +1,21 @@
+#!/bin/bash
+#
+# This pre-commit hook attempts to auto-populate the README with the redirects.
+# To use this script, symlink it to .git/hooks/pre-commit within the repo.
+
+# Nuke the README from the heading "List of Redirects" onward
+# On macOS, use gsed: `brew install gnu-sed --with-default-names`
+sed -i '/^##Redirects/,$d' README.md
+
+# pre-populate the list
+echo \
+"##Redirects (auto-updated via hook, do not manually edit)
+Shortcut | Long URL
+--- | ---" >> README.md
+
+# populate the list with contents
+grep Redirect 000-default.conf | awk \
+  '{gsub(/"/, ""); print "`", "ac"$2, "` | `", $3, "`"}' >> README.md
+
+# do git things
+git add README.md
