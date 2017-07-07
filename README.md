@@ -1,11 +1,28 @@
 # rdrx
 
+## [Overview]
+While at #lastjob, I had a simple solution to deal with a growing list of
+internal URLs, and used it to scratch an itch that DNS couldn't reach.
+
+Admittedly, Google's "go/" shortener was the inspiration, although this is only
+what I'd call a half-baked attempt at best, although I'd wager a company can
+grow quite a bit before even the weakest webserver hosting this would be taxed.
+
+This is by no means novel, but I figure it may be useful to some.
+
+PRs to enhance are of course welcome.
+
+If leveraging this company-wide, a (private/internal) DNS entry is the way to
+go. Ensure the DNS completion path (what macOS & OS X call "Search Domains") on
+your users' systems is managed if doing so, since 'ac/jira' is much quicker than
+'ac.corp.acme.com/jira'.
+
+Lastly, text [in square brackets] is intended for the sysadmin audience, as the
+rest is relevant to leave up for the company's (git-server-accessing) wider
+audience.
+
 ## Description
-
 Simple redirects for bookmark-free ACMECO internal sites navigation, easily.
-
-[Intent: company-wide or team-wide]
-
 
 ## Use
 [Omit the following two lines if an internal DNS entry is made~~, or if you dare
@@ -14,7 +31,7 @@ to manage users' /etc/hosts file~~.]
 For browser URL shortcuts such as "ac/jira" etc., place the following line in
 /etc/hosts:
 
-``10.10.10.10    ac``
+``10.10.10.10 ac``
 
 *Note: shortcuts will only work while connected to the VPN or on the corp net*
 
