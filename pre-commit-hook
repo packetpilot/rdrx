@@ -1,21 +1,121 @@
 #!/bin/bash
+
+# Copyright 2017 @packetpilot <point.it@howiget.email>
 #
-# This pre-commit hook attempts to auto-populate the README with the redirects.
-# To use this script, symlink it to .git/hooks/pre-commit within the repo.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-# Nuke the README from the heading "List of Redirects" onward
-# On macOS, use gsed: `brew install gnu-sed --with-default-names`
-sed -i '/^## Redirects/,$d' README.md
+# files this hook alters
+JSON=./addr.json
+CONF=./rdrx.conf
+README=./README.md
+# docker things
+DKRTAG=rdrx
+#DKRNAME=rdrx # defaults to $DKRTAG
+# web server things
+HOSTPORT=80
+URLBASE=go
+# OS things
+UNAME=$(uname)
 
-# pre-populate the list
-echo \
-"## Redirects (auto-updated via hook, do not manually edit)
-Shortcut | Long URL
---- | ---" >> README.md
+prereq() {
+  if [[ "${UNAME}" == 'Darwin' ]]; then
+    if [[ ! $(which gsed) ]]; then
+      echo "You need GNU sed in your PATH."
+      echo "Either edit the hook or install it."
+      echo "On macOS, you can: \`brew install gnu-sed\`"
+      exit 1
+    fi
+  elif [[ ! $(which sed) ]]; then
+    echo "You need \`sed\` in your PATH."
+    exit 1
+  fi
 
-# populate the list with contents
-grep Redirect 000-default.conf | awk \
-  '{gsub(/"/, ""); print "`", "ac"$2, "` | `", $3, "`"}' >> README.md
+  if [[ ! $(which jq) ]]; then
+    echo "You need \`jq\` in your PATH."
+    echo "See https://stedolan.github.io/jq/download/ for info."
+    exit 1
+  fi
+  if [[ ! $(which sort) ]]; then
+    echo "You need \`sort\` your PATH."
+    exit 1
+  fi
+}
 
-# do git things
-git add README.md
+apache() {
+  # sort addresses
+  sort -u "${JSON}" -o "${JSON}"
+  # conf head
+  echo -e "# This file should be automatically built via the pre-commit hook.
+  <VirtualHost *:80>
+    # Begin Redirects" > "${CONF}"
+  # conf contents
+  jq -r '[.name, .target] | @sh' "${JSON}" | \
+    while read -r line
+      do echo "    Redirect ${line}" >> "${CONF}"
+    done
+  # conf foot
+  echo -e "    # End Redirects\n  </VirtualHost>" >> "${CONF}"
+}
+
+readme() {
+  # cater to macOS without being strict about gsed --with-default-names
+  if [[ "${UNAME}" == 'Darwin' ]]; then
+    alias sed=\'$(which gsed)\'
+  fi
+  # nuke the README from the Redirects heading onward
+  sed -i '/^## Redirects/,$d' "${README}"
+
+  # insert heading and tabletop
+  echo -e "## Redirects (do not manually edit)\nShortcut | URL\n--- | ---" \
+    >> "${README}"
+
+  # populate the table
+  jq -r '[.name, .target] | @sh' "${JSON}" | \
+    while read -r line
+      do echo "${URLBASE}${line}"
+    done | \
+    tr -d \' | tr " " \| >> "${README}"
+}
+
+gitops() {
+  # add what has changed
+  git add "${JSON}"
+  git add "${CONF}"
+  git add "${README}"
+}
+
+dockerops() {
+  # effect changes
+  if [[ -z "${DKRNAME}" ]]; then
+    DKRNAME=$DKRTAG
+  fi
+  if [[ $(docker ps -a | grep "${DKRNAME}") ]]; then
+    echo "Stopping and removing previous docker container \"${DKRNAME}\"..."
+    printf "  Stopped: "
+    docker stop "${DKRNAME}"
+    printf "  Removed: "
+    docker rm "${DKRNAME}"
+  else
+    echo -e "No prior container named \"${DKRNAME}\" exists; continuing..."
+  fi
+  echo -e "Building and Starting New docker container \"${DKRNAME}\"..."
+  docker build -t "${DKRTAG}" .
+  docker run -dit --name "${DKRNAME}" -p 127.0.0.1:"${HOSTPORT}":80 "${DKRTAG}"
+}
+
+# do things
+prereq
+apache
+readme
+gitops
+dockerops
