@@ -1,77 +1,69 @@
 # rdrx
 
-## [Overview]
-While at #lastjob, I had a simple solution to deal with a growing list of
-internal URLs, and used it to scratch an itch that DNS couldn't reach.
-
-Admittedly, Google's "go/" shortener was the inspiration, although this is only
-what I'd call a half-baked attempt at best, although I'd wager a company can
-grow quite a bit before even the weakest webserver hosting this would be taxed.
-
-This is by no means novel, but I figure it may be useful to some.
-
-PRs to enhance are of course welcome.
-
-If leveraging this company-wide, a (private/internal) DNS entry is the way to
-go. Ensure the DNS completion path (what macOS & OS X call "Search Domains") on
-your users' systems is managed if doing so, since 'ac/jira' is much quicker than
-'ac.corp.acme.com/jira'.
-
-Lastly, text [in square brackets] is intended for the sysadmin audience, as the
-rest is relevant to leave up for the company's (git-server-accessing) wider
-audience.
 
 ## Description
 Simple redirects for bookmark-free ACMECO internal sites navigation, easily.
 
-## Use
-[Omit the following two lines if an internal DNS entry is made~~, or if you dare
-to manage users' /etc/hosts file~~.]
 
-For browser URL shortcuts such as "ac/jira" etc., place the following line in
-/etc/hosts:
+## Overview
+This is by no means novel, but I figure it may be useful to some.
 
-``10.10.10.10 ac``
+While at #lastjob, I had a simple solution to smooth UX around a growing list of
+internal URLs, and used it to scratch an itch that DNS couldn't reach: a list of
+301 redirects on an apache server.
 
-*Note: shortcuts will only work while connected to the VPN or on the corp net*
+Admittedly, Google's "go/" shortener was the inspiration, and this could easily
+run on a corp server with little modification, but is presented here as a local
+docker implementation.
 
-## [Server Setup]
-This assumes a default Apache server without any concurrent sites, hence the
-"000-default.conf" name of the provided Apache file.
+If leveraging this company-wide, a (private/internal) DNS entry is the way to
+go. Ensure the DNS completion path (what macOS & OS X call "Search Domains") on
+your users' systems is managed if doing so, since 'go/jira' is much quicker than
+'go.corp.acme.com/jira'.
 
-Ensure you've got some mechanism by which master deploys to the webserver.
 
-## Shortcut Contributions [ACMECO user-facing]
-- Please keep redirect contributions alphabetized.
-- After a a merge to master, the redirect will be live momentarily.
-- Use the pre-commit hook to auto-update this README's list of redirects.
+## Local Use
+0. Your first time around:
+** ensure your `/etc/hosts` file contains the line: `127.0.0.1 go`
+** be sure to link the [pre-commit-hook](pre-commit-hook):
+`ln -s ../../pre-commit.sh .git/hooks/pre-commit # from top of the repo`
+1. Modify *only* the [`addr.json`](addr.json) file (disregard line order):
+** "name" and "target" key/value pairs must exist for each line
+2. Commit; the [pre-commit-hook](pre-commit-hook) will:
+** `sort` [`addr.json`](addr.json)
+** generate the [Redirects table in the README](README.md#redirects-auto-updated-via-hook-do-not-manually-edit)
+** generate of the [rdrx.conf](rdrx.conf) file
+** stop and remove a pre-existing docker container
+** build and start a fresh docker container
+
+*Note: Some shortcuts may only work on the corp network/VPN*
 
 ## "Someday"
 - Custom 404 with a form for magical ingestion/addition of a shortcut
-- Automation elegance via deploy hook as part of the repo
-- Auto-generation of the Apache file via $something ingestion (yaml?)
 
-## Redirects (auto-updated via hook, do not manually edit)
-Shortcut | Long URL
+
+## Redirects (do not manually edit)
+Shortcut | URL
 --- | ---
-` ac/aws ` | ` https://ACMECO.signin.aws.amazon.com/console `
-` ac/confluence ` | ` https://ACMECO.atlassian.net/wiki `
-` ac/facilities ` | ` https://ACMECO.atlassian.net/servicedesk/customer/portal/1 `
-` ac/finance ` | ` https://sites.google.com/a/ACMECO/finance `
-` ac/gcp ` | ` https://console.cloud.google.com/home `
-` ac/gdoc ` | ` https://goo.gl/AcM3Co `
-` ac/git ` | ` https://github.com/ACMECO `
-` ac/github ` | ` https://github.com/ACMECO `
-` ac/gitlab ` | ` https://gitlab.ACMECO.com `
-` ac/grafana ` | ` https://grafana.prod.ACMECO.com `
-` ac/hbase ` | ` https://hbase.prod.ACMECO.com/master-status `
-` ac/hr ` | ` https://ACMECO.whateverthenewhipHRIS.is `
-` ac/hr! ` | ` mailto:hr@ACMECO.com `
-` ac/ithelp ` | ` https://ACMECO.atlassian.net/servicedesk/customer/portal/2 `
-` ac/jira ` | ` https://ACMECO.atlassian.net/secure/Dashboard.jspa `
-` ac/mapr ` | ` https://mapr.prod.ACMECO.com `
-` ac/observium ` | ` https://observium.ACMECO.com `
-` ac/po ` | ` https://productioncloud2.verian.com/Prod2/SomeRidiculouslyLongThingBecauseFinanceSoftware,Apparently `
-` ac/pd ` | ` https://ACMECO.pagerduty.com `
-` ac/slack ` | ` https://ACMECO.slack.com `
-` ac/who ` | ` https://www.google.com/contacts/?cplus=0#contacts/group/27/Directory `
+go/aws|https://ACMECO.signin.aws.amazon.com/console
+go/confluence|https://ACMECO.atlassian.net/wiki
+go/facilities|https://ACMECO.atlassian.net/servicedesk/customer/portal/1
+go/finance|https://sites.google.com/a/ACMECO/finance
+go/gcp|https://console.cloud.google.com/home
+go/gdoc|https://goo.gl/AcM3Co
+go/git|https://github.com/ACMECO
+go/github|https://github.com/ACMECO
+go/gitlab|https://gitlab.ACMECO.com
+go/grafana|https://grafana.prod.ACMECO.com
+go/hbase|https://hbase.prod.ACMECO.com/master-status
+go/hr!|mailto:hr@ACMECO.com?subject=Ohnoes&body=https://goo.gl/acqZJE
+go/hr|https://ACMECO.whateverthenewhipHRIS.is
+go/ithelp|https://ACMECO.atlassian.net/servicedesk/customer/portal/2
+go/jira|https://ACMECO.atlassian.net/secure/Dashboard.jspa
+go/mapr|https://mapr.prod.ACMECO.com
+go/observium|https://observium.ACMECO.com
+go/pd|https://ACMECO.pagerduty.com
+go/po|https://productioncloud2.verian.com/Prod2/SomeRidiculouslyLongThingBecauseFinanceSoftware,Apparently
+go/security!|mailto:security@ACMECO.com
+go/slack|https://ACMECO.slack.com
+go/who|https://www.google.com/contacts/?cplus=0#contacts/group/27/Directory
