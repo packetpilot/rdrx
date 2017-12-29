@@ -24,17 +24,17 @@ your users' systems is managed if doing so, since 'go/jira' is much quicker than
 
 ## Local Use
 0. Your first time around:
-** ensure your `/etc/hosts` file contains the line: `127.0.0.1 go`
-** be sure to link the [pre-commit-hook](pre-commit-hook):
+  * ensure your `/etc/hosts` file contains the line: `127.0.0.1 go`
+  * be sure to link the [pre-commit-hook](pre-commit-hook):
 `ln -s ../../pre-commit.sh .git/hooks/pre-commit # from top of the repo`
 1. Modify *only* the [`addr.json`](addr.json) file (disregard line order):
-** "name" and "target" key/value pairs must exist for each line
+  * "name" and "target" key/value pairs must exist for each line
 2. Commit; the [pre-commit-hook](pre-commit-hook) will:
-** `sort` [`addr.json`](addr.json)
-** generate the [Redirects table in the README](README.md#redirects-auto-updated-via-hook-do-not-manually-edit)
-** generate of the [rdrx.conf](rdrx.conf) file
-** stop and remove a pre-existing docker container
-** build and start a fresh docker container
+  * `sort` [`addr.json`](addr.json)
+  * generate the [Redirects table in the README](README.md#redirects-auto-updated-via-hook-do-not-manually-edit)
+  * generate of the [rdrx.conf](rdrx.conf) file
+  * stop and remove a pre-existing docker container
+  * build and start a fresh docker container
 
 *Note: Some shortcuts may only work on the corp network/VPN*
 
