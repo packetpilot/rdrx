@@ -111,6 +111,7 @@ readme() {
   # cater to macOS without being strict about gsed --with-default-names
   if [[ "${UNAME}" != 'Linux' ]]; then
     alias sed=\'$(which gsed)\'
+    alias date=\'$(which gdate)\'
   fi
   # nuke the README from the Redirects heading onward
   sed -i '/^## Redirects/,$d' "${README}"
@@ -133,6 +134,7 @@ dockerops() {
     echo "Stopping and removing previous docker container \"${DKRNAME}\"..."
     printf "  Stopped: "
     docker stop "${DKRNAME}"
+    start=$(($(gdate +%s%N)/1000000))
     printf "  Removed: "
     docker rm "${DKRNAME}"
   else
@@ -142,6 +144,10 @@ dockerops() {
   docker build -t "${DKRTAG}" .
   printf "Running: "
   docker run -dit --name "${DKRNAME}" -p 127.0.0.1:"${HOSTPORT}":80 "${DKRTAG}"
+  if [[ ! -z "${start}" ]]; then
+    stop=$(($(gdate +%s%N)/1000000))
+    echo "  [33mTotal Downtime[0m: $(($stop - $start))" milliseconds
+  fi
 }
 
 dockertests() {
