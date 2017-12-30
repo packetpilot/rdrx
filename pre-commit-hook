@@ -18,17 +18,36 @@
 JSON=./addr.json
 CONF=./rdrx.conf
 README=./README.md
+
+# json validation things
+NAMECOUNT=$(jq .name "${JSON}" | grep -v 'null' | wc -l)
+TARGETCOUNT=$(jq .target "${JSON}" | grep -v 'null' | wc -l)
+
 # docker things
 DKRTAG=rdrx
-#DKRNAME=rdrx # defaults to $DKRTAG
+#DKRNAME=rdrx # defaults to $DKRTAG if unset, below
+if [[ -z "${DKRNAME}" ]]; then
+  DKRNAME="${DKRTAG}"
+fi
+
 # web server things
-HOSTPORT=80
-URLBASE=go
+TLD=go
+#HOSTPORT=80 # defaults to 80 if unset, below
+if [[ -z "${HOSTPORT}" ]]; then
+  HOSTPORT=80
+  URLBASE="${TLD}" # don't be noisy about a standard port
+else
+  URLBASE="${TLD}:${HOSTPORT}"
+fi
+
 # OS things
 UNAME=$(uname)
+HOSTFILE=/etc/hosts
 
+# begin functions
 prereq() {
-  if [[ "${UNAME}" == 'Darwin' ]]; then
+  # tools
+  if [[ "${UNAME}" != 'Linux' ]]; then
     if [[ ! $(which gsed) ]]; then
       echo "You need GNU sed in your PATH."
       echo "Either edit the hook or install it."
@@ -39,7 +58,11 @@ prereq() {
     echo "You need \`sed\` in your PATH."
     exit 1
   fi
-
+  if [[ ! $(which docker) ]]; then
+    echo "You need \`docker\` in your PATH."
+    echo "See https://www.docker.com/get-docker for info."
+    exit 1
+  fi
   if [[ ! $(which jq) ]]; then
     echo "You need \`jq\` in your PATH."
     echo "See https://stedolan.github.io/jq/download/ for info."
@@ -48,6 +71,23 @@ prereq() {
   if [[ ! $(which sort) ]]; then
     echo "You need \`sort\` your PATH."
     exit 1
+  fi
+  # json
+  echo "Checking json..."
+  if [ "${NAMECOUNT}" != "${TARGETCOUNT}" ]; then
+    echo "  [31mFailure[0m: ${JSON} name and target sums are disperate."
+    exit 1
+  else
+    echo "  [32mSuccess[0m: ${JSON} name and target sums are equal."
+  fi
+  # /etc/hosts
+  echo "Checking ${HOSTFILE}..."
+  if [[ ! $(grep "${URLBASE}" "${HOSTFILE}" | grep '^127.0.0.1') ]]; then
+    echo "  [31mFailure[0m: Couldn't find \"${URLBASE}\" in "${HOSTFILE}"."
+    echo "  Add a line such as \"127.0.0.1   ${URLBASE}\" to "${HOSTFILE}"."
+    exit 1
+  else
+    echo "  [32mSuccess[0m: \"${URLBASE}\" should loop back, per ${HOSTFILE}."
   fi
 }
 
@@ -60,8 +100,8 @@ apache() {
     # Begin Redirects" > "${CONF}"
   # conf contents
   jq -r '[.name, .target] | @sh' "${JSON}" | \
-    while read -r line
-      do echo "    Redirect ${line}" >> "${CONF}"
+    while read -r line; do
+      echo "    Redirect ${line}" >> "${CONF}"
     done
   # conf foot
   echo -e "    # End Redirects\n  </VirtualHost>" >> "${CONF}"
@@ -69,7 +109,7 @@ apache() {
 
 readme() {
   # cater to macOS without being strict about gsed --with-default-names
-  if [[ "${UNAME}" == 'Darwin' ]]; then
+  if [[ "${UNAME}" != 'Linux' ]]; then
     alias sed=\'$(which gsed)\'
   fi
   # nuke the README from the Redirects heading onward
@@ -81,24 +121,14 @@ readme() {
 
   # populate the table
   jq -r '[.name, .target] | @sh' "${JSON}" | \
-    while read -r line
-      do echo "${URLBASE}${line}"
+    while read -r line; do
+      echo "${URLBASE}${line}"
     done | \
     tr -d \' | tr " " \| >> "${README}"
 }
 
-gitops() {
-  # add what has changed
-  git add "${JSON}"
-  git add "${CONF}"
-  git add "${README}"
-}
-
 dockerops() {
   # effect changes
-  if [[ -z "${DKRNAME}" ]]; then
-    DKRNAME=$DKRTAG
-  fi
   if [[ $(docker ps -a | grep "${DKRNAME}") ]]; then
     echo "Stopping and removing previous docker container \"${DKRNAME}\"..."
     printf "  Stopped: "
@@ -110,12 +140,45 @@ dockerops() {
   fi
   echo -e "Building and Starting New docker container \"${DKRNAME}\"..."
   docker build -t "${DKRTAG}" .
+  printf "Running: "
   docker run -dit --name "${DKRNAME}" -p 127.0.0.1:"${HOSTPORT}":80 "${DKRTAG}"
 }
+
+dockertests() {
+  echo "Beginning base webserver test..."
+  status=$(curl -Lsw "%{http_code}\n" "${URLBASE}" -o /dev/null)
+  if [ $status != 200 ]; then
+    echo "  [31mFailure[0m: \"http://${URLBASE}\": Error ${status}"
+    exit 1
+  else
+    echo "  [32mSuccess[0m: \"http://${URLBASE}\": ${status} OK"
+  fi
+  echo "Beginning individual redirects test..."
+  jq -r '.name | @sh' "${JSON}" | tr -d "'" \
+    | while read -r line; do
+      status=$(curl -Lsw "%{http_code}\n" "${URLBASE}${line}" -o /dev/null)
+      if [ "${status}" != 200 ] && [ "${status}" != 302 ]; then
+        echo \
+          "  [31mFailure[0m: ${URLBASE}${line}: Error ${status}"
+        # exit 1 # uncomment this line if you'd like to be strict
+      else
+        echo "  [32mSuccess[0m: ${URLBASE}${line}: ${status} OK"
+      fi
+    done
+}
+
+gitops() {
+  # add what has changed
+  git add "${JSON}"
+  git add "${CONF}"
+  git add "${README}"
+}
+# end functions
 
 # do things
 prereq
 apache
 readme
-gitops
 dockerops
+dockertests
+gitops

@@ -1,8 +1,5 @@
 # rdrx
-
-
-## Description
-Simple redirects for bookmark-free ACMECO internal sites navigation, easily.
+URL simplicity via redirects, because bookmarks are for books.
 
 
 ## Overview
@@ -17,19 +14,28 @@ run on a corp server with little modification, but is presented here as a local
 docker implementation.
 
 If leveraging this company-wide, a (private/internal) DNS entry is the way to
-go. Ensure the DNS completion path (what macOS & OS X call "Search Domains") on
-your users' systems is managed if doing so, since 'go/jira' is much quicker than
+go. Ensure the DNS completion path (what macOS calls "Search Domains") on your
+users' systems is managed if doing so, since 'go/jira' is much quicker than
 'go.corp.acme.com/jira'.
 
 
 ## Local Use
 ### Prerequisites
-1. Ensure you have GNU `sed`, [`jq`](https://stedolan.github.io/jq/download/),
-   and `sort` in your $PATH.
+1. You're on a Linux or macOS box and:
+   * have the following in your $PATH:
+     * GNU `sed` (important for macOS; `--with-default-names` is not required)
+     * [`jq`](https://stedolan.github.io/jq/download/)
+     * [`docker`](https://www.docker.com/get-docker)
+     * Things that are almost certainly already there, like `sort`, `curl`, and
+       `echo`
+   * aren't hosting anything from that box on port 80 (although port
+     customization is easily achieved in the [pre-commit-hook](pre-commit-hook))
+     .
 1. Ensure your `/etc/hosts` file contains the line:
    `127.0.0.1 go`
 1. Be sure to link the [pre-commit-hook](pre-commit-hook):
    `ln -s ../../pre-commit.sh .git/hooks/pre-commit # from top of the repo`
+   It _should_ helpfully let you know what's missing wrt the above.
 
 ### Updating the Redirects
 1. Modify *only* the [`addr.json`](addr.json) file (disregard line order);
@@ -39,13 +45,21 @@ your users' systems is managed if doing so, since 'go/jira' is much quicker than
    * generate the [Redirects table in the README](README.md#redirects-do-not-manually-edit)
    * generate of the [rdrx.conf](rdrx.conf) file
    * stop and remove a pre-existing docker container
-   * build and start a fresh docker container
+   * build and start a fresh docker container (total downtime is ~3s on a modern
+     MacBook Pro)
+   * run helpful tests along the way, with some red/green color coding, and
+     helpful output  
 
 *Note: Some shortcuts may only work on the corp network/VPN*
 
 ## "Someday"
+- [x] dockerize
+- [x] json-ify
 - [ ] Custom 404 with a form for magical ingestion/addition of a shortcut
-- [ ] Put/get json from GCS/S3
+- [ ] Get json from GCS/S3
+- [ ] Put json into GCS/S3 from a Google Sheet (for 'zero-chops admin')
+- [ ] Analytics support
+- [ ] Prometheus exporter
 
 
 ## Redirects (do not manually edit)
