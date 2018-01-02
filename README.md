@@ -7,16 +7,18 @@ This is by no means novel, but I figure it may be useful to some.
 
 While at #lastjob, I had a simple solution to smooth UX around a growing list of
 internal URLs, and used it to scratch an itch that DNS couldn't reach: a list of
-301 redirects on an apache server.
+301 redirects on an apache server. Google's "go/" shortener (for corp use by
+employees etc.) served as inspiration for what had initially been devoid of any
+magic whatsoever. This project aims to tackle a "simple" challenge with a little
+more magic, hopefully in the style of an ops engineer as opposed to a sys admin.
 
-Admittedly, Google's "go/" shortener was the inspiration, and this could easily
-run on a corp server with little modification, but is presented here as a local
-docker implementation.
+rdrx could easily run on a corp server with little modification, but is
+presented here as a local docker implementation.
 
 If leveraging this company-wide, a (private/internal) DNS entry is the way to
 go. Ensure the DNS completion path (what macOS calls "Search Domains") on your
 users' systems is managed if doing so, since 'go/jira' is much quicker than
-'go.corp.acme.com/jira'.
+'go.corp.urbanairship.com/jira'.
 
 
 ## Local Use
@@ -29,13 +31,13 @@ users' systems is managed if doing so, since 'go/jira' is much quicker than
      * Things that are almost certainly already there, like `sort`, `curl`, and
        `echo`
    * aren't hosting anything from that box on port 80 (although port
-     customization is easily achieved in the [pre-commit-hook](pre-commit-hook))
-     .
+     customization is easily achieved in the [pre-commit-hook](pre-commit-hook)).
 1. Ensure your `/etc/hosts` file contains the line:
    `127.0.0.1 go`
 1. Be sure to link the [pre-commit-hook](pre-commit-hook):
    `ln -s ../../pre-commit.sh .git/hooks/pre-commit # from top of the repo`
    It _should_ helpfully let you know what's missing wrt the above.
+
 
 ### Updating the Redirects
 1. Modify *only* the [`addr.json`](addr.json) file (disregard line order);
@@ -50,7 +52,6 @@ users' systems is managed if doing so, since 'go/jira' is much quicker than
    * run helpful tests along the way, with some red/green color coding, and
      helpful output  
 
-*Note: Some shortcuts may only work on the corp network/VPN*
 
 ## "Someday"
 - [x] dockerize
