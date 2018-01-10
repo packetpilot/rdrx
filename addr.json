@@ -1,4 +1,4 @@
-{ "name": "/aws", "target": "https://ACMECO.signin.aws.amazon.com/console" }
+{ "name": "/amazon", "target": "https://www.amazon.com" }
 { "name": "/confluence", "target": "https://ACMECO.atlassian.net/wiki" }
 { "name": "/facilities", "target": "https://ACMECO.atlassian.net/servicedesk/customer/portal/1" }
 { "name": "/finance", "target": "https://sites.google.com/a/ACMECO/finance" }

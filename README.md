@@ -88,3 +88,78 @@ go/po|https://productioncloud2.verian.com/Prod2/SomeRidiculouslyLongThingBecause
 go/security!|mailto:security@ACMECO.com
 go/slack|https://ACMECO.slack.com
 go/who|https://www.google.com/contacts/?cplus=0#contacts/group/27/Directory
+## Redirects (do not manually edit)
+Shortcut | URL
+--- | ---
+go/aws|https://ACMECO.signin.aws.amazon.com/console
+go/confluence|https://ACMECO.atlassian.net/wiki
+go/facilities|https://ACMECO.atlassian.net/servicedesk/customer/portal/1
+go/finance|https://sites.google.com/a/ACMECO/finance
+go/gcp|https://console.cloud.google.com/home
+go/gdoc|https://goo.gl/AcM3Co
+go/git|https://github.com/ACMECO
+go/github|https://github.com/ACMECO
+go/gitlab|https://gitlab.ACMECO.com
+go/grafana|https://grafana.prod.ACMECO.com
+go/hbase|https://hbase.prod.ACMECO.com/master-status
+go/hr!|mailto:hr@ACMECO.com?subject=Ohnoes&body=https://goo.gl/acqZJE
+go/hr|https://ACMECO.whateverthenewhipHRIS.is
+go/ithelp|https://ACMECO.atlassian.net/servicedesk/customer/portal/2
+go/jira|https://ACMECO.atlassian.net/secure/Dashboard.jspa
+go/mapr|https://mapr.prod.ACMECO.com
+go/observium|https://observium.ACMECO.com
+go/pd|https://ACMECO.pagerduty.com
+go/po|https://productioncloud2.verian.com/Prod2/SomeRidiculouslyLongThingBecauseFinanceSoftware,Apparently
+go/security!|mailto:security@ACMECO.com
+go/slack|https://ACMECO.slack.com
+go/who|https://www.google.com/contacts/?cplus=0#contacts/group/27/Directory
+## Redirects (do not manually edit)
+Shortcut | URL
+--- | ---
+go/amazon|https://www.amazon.com
+go/confluence|https://ACMECO.atlassian.net/wiki
+go/facilities|https://ACMECO.atlassian.net/servicedesk/customer/portal/1
+go/finance|https://sites.google.com/a/ACMECO/finance
+go/gcp|https://console.cloud.google.com/home
+go/gdoc|https://goo.gl/AcM3Co
+go/git|https://github.com/ACMECO
+go/github|https://github.com/ACMECO
+go/gitlab|https://gitlab.ACMECO.com
+go/grafana|https://grafana.prod.ACMECO.com
+go/hbase|https://hbase.prod.ACMECO.com/master-status
+go/hr!|mailto:hr@ACMECO.com?subject=Ohnoes&body=https://goo.gl/acqZJE
+go/hr|https://ACMECO.whateverthenewhipHRIS.is
+go/ithelp|https://ACMECO.atlassian.net/servicedesk/customer/portal/2
+go/jira|https://ACMECO.atlassian.net/secure/Dashboard.jspa
+go/mapr|https://mapr.prod.ACMECO.com
+go/observium|https://observium.ACMECO.com
+go/pd|https://ACMECO.pagerduty.com
+go/po|https://productioncloud2.verian.com/Prod2/SomeRidiculouslyLongThingBecauseFinanceSoftware,Apparently
+go/security!|mailto:security@ACMECO.com
+go/slack|https://ACMECO.slack.com
+go/who|https://www.google.com/contacts/?cplus=0#contacts/group/27/Directory
+## Redirects (do not manually edit)
+Shortcut | URL
+--- | ---
+go/amazon|https://www.amazon.com
+go/confluence|https://ACMECO.atlassian.net/wiki
+go/facilities|https://ACMECO.atlassian.net/servicedesk/customer/portal/1
+go/finance|https://sites.google.com/a/ACMECO/finance
+go/gcp|https://console.cloud.google.com/home
+go/gdoc|https://goo.gl/AcM3Co
+go/git|https://github.com/ACMECO
+go/github|https://github.com/ACMECO
+go/gitlab|https://gitlab.ACMECO.com
+go/grafana|https://grafana.prod.ACMECO.com
+go/hbase|https://hbase.prod.ACMECO.com/master-status
+go/hr!|mailto:hr@ACMECO.com?subject=Ohnoes&body=https://goo.gl/acqZJE
+go/hr|https://ACMECO.whateverthenewhipHRIS.is
+go/ithelp|https://ACMECO.atlassian.net/servicedesk/customer/portal/2
+go/jira|https://ACMECO.atlassian.net/secure/Dashboard.jspa
+go/mapr|https://mapr.prod.ACMECO.com
+go/observium|https://observium.ACMECO.com
+go/pd|https://ACMECO.pagerduty.com
+go/po|https://productioncloud2.verian.com/Prod2/SomeRidiculouslyLongThingBecauseFinanceSoftware,Apparently
+go/security!|mailto:security@ACMECO.com
+go/slack|https://ACMECO.slack.com
+go/who|https://www.google.com/contacts/?cplus=0#contacts/group/27/Directory
