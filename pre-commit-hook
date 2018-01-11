@@ -31,7 +31,7 @@ if [[ -z "${DKRNAME}" ]]; then
 fi
 
 # web server things
-TLD=go
+TLD=g0
 #HOSTPORT=80 # defaults to 80 if unset, below
 if [[ -z "${HOSTPORT}" ]]; then
   HOSTPORT=80
