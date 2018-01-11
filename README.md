@@ -5,13 +5,16 @@ URL simplicity via redirects, because bookmarks are for books.
 ## Overview
 _This is by no means novel, but I figure it may be useful to some._
 
-rdrx is a project that simplifies URLs that you frequently visit, but can't
-always recall. It does so via a docker container, which can run on your machine,
-or, if you're leveraging this for a workplace, on some internal/VPC server.
+rdrx aims to simplify URLs that you frequently visit, but can't always recall.
+It does so via a docker container, which can run on your machine, or, if
+leveraging this for a workplace, on some internally-accessible server.
 
 | what had been... | ...is now |
 | ---------------- | --------- |
 | portal.some-obscure-unhelpful.name/login.foo | g0/paystubs |
+
+rdrx can also handle `mailto:` links, so "g0/help!" or "g0/security!" can be an
+easy way to shave off a little time that could make a big difference.
 
 
 ## Backstory
@@ -66,7 +69,9 @@ users' systems is managed if doing so, since 'ua/jira' is much quicker than
     * build and start a fresh docker container (total downtime is ~3s on a modern
       MacBook Pro)
     * run helpful tests along the way, with some red/green color coding, and
-      helpful output along the way.
+      helpful output along the way, as so:
+
+      ![Graphic](https://i.imgur.com/r1u0vbP.png?raw=true)
 
 
 ## "Someday"
