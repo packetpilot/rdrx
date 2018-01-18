@@ -20,8 +20,8 @@ CONF=./rdrx.conf
 README=./README.md
 
 # json validation things
-NAMECOUNT=$(jq .name "${JSON}" | grep -v 'null' | wc -l)
-TARGETCOUNT=$(jq .target "${JSON}" | grep -v 'null' | wc -l)
+NAMECOUNT=$(jq .name "${JSON}" | grep -cv 'null')
+TARGETCOUNT=$(jq .target "${JSON}" | grep -cv 'null')
 
 # docker things
 DKRTAG=rdrx
@@ -44,10 +44,24 @@ fi
 UNAME=$(uname)
 HOSTFILE=/etc/hosts
 
+# multi-platform things
+if [[ "${UNAME}" == 'Darwin' ]]; then
+  SED=$(which gsed)
+  DATE=$(which gdate)
+elif [[ "${UNAME}" == 'Linux' ]]; then
+  SED='sed'
+  DATE='date'
+else
+  echo "You seem to be running an unsupported OS."
+  echo "This is supported on macOS & Linux."
+  exit 1
+fi
+export SED DATE
+
 # begin functions
 prereq() {
   # tools
-  if [[ "${UNAME}" != 'Linux' ]]; then
+  if [[ "${UNAME}" == 'Darwin' ]]; then
     if [[ ! $(which gsed) ]]; then
       echo "You need GNU sed in your PATH."
       echo "Either edit the hook or install it."
@@ -83,8 +97,8 @@ prereq() {
   # /etc/hosts
   echo "Checking ${HOSTFILE}..."
   if [[ ! $(grep "${URLBASE}" "${HOSTFILE}" | grep '^127.0.0.1') ]]; then
-    echo "  [31mFailure[0m: Couldn't find \"${URLBASE}\" in "${HOSTFILE}"."
-    echo "  Add a line such as \"127.0.0.1   ${URLBASE}\" to "${HOSTFILE}"."
+    echo "  [31mFailure[0m: Couldn't find \"${URLBASE}\" in ${HOSTFILE}."
+    echo "  Add a line such as \"127.0.0.1   ${URLBASE}\" to ${HOSTFILE}."
     exit 1
   else
     echo "  [32mSuccess[0m: \"${URLBASE}\" should loop back, per ${HOSTFILE}."
@@ -108,13 +122,8 @@ apache() {
 }
 
 readme() {
-  # cater to macOS without being strict about gsed --with-default-names
-  if [[ "${UNAME}" != 'Linux' ]]; then
-    alias sed=\'$(which gsed)\'
-    alias date=\'$(which gdate)\'
-  fi
   # nuke the README from the Redirects heading onward
-  sed -i '/^## Redirects/,$d' "${README}"
+  "${SED}" -i '/^## Redirects/,$d' "${README}"
 
   # insert heading and tabletop
   echo -e "## Redirects (do not manually edit)\nShortcut | URL\n--- | ---" \
@@ -134,7 +143,7 @@ dockerops() {
     echo "Stopping and removing previous docker container \"${DKRNAME}\"..."
     printf "  Stopped: "
     docker stop "${DKRNAME}"
-    start=$(($(gdate +%s%N)/1000000))
+    start=$(($("${DATE}" +%s%N)/1000000))
     printf "  Removed: "
     docker rm "${DKRNAME}"
   else
@@ -145,15 +154,15 @@ dockerops() {
   printf "Running: "
   docker run -dit --name "${DKRNAME}" -p 127.0.0.1:"${HOSTPORT}":80 "${DKRTAG}"
   if [[ ! -z "${start}" ]]; then
-    stop=$(($(gdate +%s%N)/1000000))
-    echo "  [33mTotal Downtime[0m: $(($stop - $start))" milliseconds
+    stop=$(($("${DATE}" +%s%N)/1000000))
+    echo "  [33mTotal Downtime[0m: $((stop - start))" milliseconds
   fi
 }
 
 dockertests() {
   echo "Beginning base webserver test..."
   status=$(curl -Lsw "%{http_code}\n" "${URLBASE}" -o /dev/null)
-  if [ $status != 200 ]; then
+  if [ "${status}" != 200 ]; then
     echo "  [31mFailure[0m: \"http://${URLBASE}\": Error ${status}"
     exit 1
   else
