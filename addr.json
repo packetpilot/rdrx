@@ -13,6 +13,7 @@
 { "name": "/hr", "target": "https://ACMECO.whateverthenewhipHRIS.is" }
 { "name": "/ithelp", "target": "https://ACMECO.atlassian.net/servicedesk/customer/portal/2" }
 { "name": "/jira", "target": "https://ACMECO.atlassian.net/secure/Dashboard.jspa" }
+{ "name": "/linkedin", "target": "https://www.linkedin.com" }
 { "name": "/mapr", "target": "https://mapr.prod.ACMECO.com" }
 { "name": "/observium", "target": "https://observium.ACMECO.com" }
 { "name": "/pd", "target": "https://ACMECO.pagerduty.com" }
@@ -20,3 +21,4 @@
 { "name": "/security!", "target": "mailto:security@ACMECO.com" }
 { "name": "/slack", "target": "https://ACMECO.slack.com" }
 { "name": "/who", "target": "https://www.google.com/contacts/?cplus=0#contacts/group/27/Directory" }
+{ "name": "/youtube", "target": "https://www.youtube.com" }
